@@ -47,7 +47,7 @@ nav { display:flex; gap:4px; margin:16px 0 22px; }
 .tab.on { background:var(--ink); color:var(--paper); }
 
 .row {
-  display:grid; grid-template-columns:52px 1fr auto; gap:14px; align-items:center;
+  display:grid; grid-template-columns:52px 46px 1fr auto; gap:13px; align-items:center;
   background:var(--card); border:1px solid var(--line); border-left:3px solid var(--leaf);
   border-radius:2px; padding:13px 14px; margin-bottom:9px; width:100%; text-align:left;
   font:inherit; color:inherit; cursor:pointer;
@@ -113,8 +113,25 @@ input, select {
 .log { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink-soft); line-height:1.9; }
 :focus-visible { outline:2px solid var(--water); outline-offset:2px; }
 
+
+.pic {
+  width:46px; height:46px; border-radius:3px; object-fit:cover;
+  border:1px solid var(--line); display:block; background:var(--paper);
+}
+.pic.none {
+  border-style:dashed; display:flex; align-items:center; justify-content:center;
+  color:var(--line); font-size:17px;
+}
+.hero { width:100%; max-height:280px; object-fit:cover; border-radius:3px; border:1px solid var(--line); margin:14px 0 4px; display:block; }
+.gal { display:flex; gap:7px; overflow-x:auto; padding:4px 0 8px; -webkit-overflow-scrolling:touch; }
+.gal figure { margin:0; flex:0 0 auto; text-align:center; cursor:pointer; }
+.gal img { width:66px; height:66px; object-fit:cover; border-radius:3px; border:1px solid var(--line); display:block; }
+.gal figcaption { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--ink-soft); margin-top:4px; }
+.gal figure.sel img { border-color:var(--water); border-width:2px; }
+
 @media (max-width:520px){
-  .row { grid-template-columns:44px 1fr; }
+  .row { grid-template-columns:42px 40px 1fr; gap:10px; }
+  .pic { width:40px; height:40px; }
   .acts { grid-column:1/-1; display:flex; gap:6px; }
   .acts .btn { flex:1; }
   h1 { font-size:25px; }
@@ -228,8 +245,8 @@ function load(){
   return SEED.map(p => ({...p}));
 }
 function save(){
-  try { localStorage.setItem(KEY, JSON.stringify(plants)); }
-  catch(e){ console.error("shranjevanje", e); }
+  try { localStorage.setItem(KEY, JSON.stringify(plants)); return true; }
+  catch(e){ console.error("shranjevanje", e); return false; }
 }
 
 function status(p){
@@ -259,8 +276,10 @@ function rowHTML(p){
   else if (s.due === 0) { big="0"; lbl="danes"; }
   else                  { big=Math.abs(s.due); lbl="zamude"; }
 
+  const shot = p.photos && p.photos.length ? p.photos[0].src : null;
   return `<div class="row ${s.cls}" data-open="${p.id}">
     <div class="count">${big}<small>${lbl}</small></div>
+    ${shot ? `<img class="pic" src="${shot}" alt="">` : `<div class="pic none">❧</div>`}
     <div>
       <h3 class="nm">${esc(p.name)}</h3>
       <p class="lat">${p.hydro ? "v vodi · menjaj vsak teden" : esc(p.latin)}</p>
@@ -296,6 +315,7 @@ function render(){
     h += `<h2 class="sec">Za pognojiti</h2>` + feeds.map(([p]) => `
       <div class="row soon" data-open="${p.id}">
         <div class="count" style="color:var(--feed)">⌁<small>gnojilo</small></div>
+        ${p.photos && p.photos.length ? `<img class="pic" src="${p.photos[0].src}" alt="">` : `<div class="pic none">❧</div>`}
         <div><h3 class="nm">${esc(p.name)}</h3>
         <p class="lat">${p.lastFert ? "nazadnje "+pretty(p.lastFert) : "še ni bilo gnojeno"} · na ${p.fd} ${dw(p.fd)}</p></div>
         <div class="acts"><button class="btn feed" data-feed="${p.id}">Pognojeno</button></div>
@@ -314,7 +334,10 @@ function detail(id){
     <button class="close" data-close="1">Zapri ✕</button>
     <h2 class="nm" style="font-size:25px">${esc(p.name)}</h2>
     <p class="lat" style="font-size:15px">${esc(p.latin)}${p.tag?" · "+esc(p.tag):""}</p>
+    ${p.photos && p.photos.length ? `<img class="hero" src="${p.photos[0].src}" alt="${esc(p.name)}">` : ""}
+    ${p.photos && p.photos.length > 1 ? `<div class="gal">${p.photos.map((f,i)=>`<figure class="${i===0?"sel":""}" data-shot="${p.id}|${i}"><img src="${f.src}" alt=""><figcaption>${pretty(f.d)}</figcaption></figure>`).join("")}</div>` : ""}
     <div style="display:flex;gap:8px;margin:16px 0 4px;flex-wrap:wrap">
+      <button class="btn plain" data-shoot="${p.id}">${p.photos && p.photos.length ? "Nova fotografija" : "Dodaj fotografijo"}</button>
       <button class="btn" data-water="${p.id}">${p.hydro?"Menjal vodo danes":"Zalil danes"}</button>
       ${p.fd ? `<button class="btn feed" data-feed="${p.id}">Pognojil danes</button>` : ""}
     </div>
@@ -355,6 +378,51 @@ function addForm(){
 
 function close(){ $("#modal").innerHTML = ""; }
 
+function shrink(file, max = 560, q = 0.72){
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      res(c.toDataURL("image/jpeg", q));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("slika")); };
+    img.src = url;
+  });
+}
+
+function shoot(id){
+  const p = plants.find(x => x.id === id);
+  if (!p) return;
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "image/*";
+  inp.onchange = async () => {
+    const f = inp.files && inp.files[0];
+    if (!f) return;
+    let src;
+    try { src = await shrink(f); }
+    catch(e){ alert("Slike ni bilo mogoče prebrati. Poskusi z drugo."); return; }
+    const backup = p.photos ? [...p.photos] : [];
+    p.photos = [{ d: today(), src }, ...backup].slice(0, 8);
+    if (!save()) { p.photos = backup; alert("Shramba je polna. Izbriši nekaj starih fotografij, pa poskusi znova."); }
+    render(); detail(id);
+  };
+  inp.click();
+}
+
+function dropShot(id, i){
+  const p = plants.find(x => x.id === id);
+  if (!p || !p.photos || !p.photos[i]) return;
+  if (i === 0 && p.photos.length > 1) {
+    if (!confirm("Izbrišem to fotografijo? Naslednja bo postala naslovna.")) return;
+  } else if (!confirm("Izbrišem to fotografijo?")) return;
+  p.photos.splice(i, 1);
+  save(); render(); detail(id);
+}
+
 function log(id, kind){
   const p = plants.find(x => x.id === id);
   if (!p) return;
@@ -366,13 +434,15 @@ function log(id, kind){
 }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-tab],[data-water],[data-feed],[data-open],[data-close],[data-veil],[data-del],[data-add],#f-save");
+  const t = e.target.closest("[data-tab],[data-water],[data-feed],[data-open],[data-close],[data-veil],[data-del],[data-add],[data-shoot],[data-shot],#f-save");
   if (!t) return;
 
   if (t.dataset.tab)   { tab = t.dataset.tab; close(); render(); return; }
   if (t.dataset.water) { e.stopPropagation(); log(t.dataset.water, "w"); return; }
   if (t.dataset.feed)  { e.stopPropagation(); log(t.dataset.feed, "f"); return; }
   if (t.dataset.add)   { addForm(); return; }
+  if (t.dataset.shoot) { e.stopPropagation(); shoot(t.dataset.shoot); return; }
+  if (t.dataset.shot)  { const [pid, i] = t.dataset.shot.split("|"); dropShot(pid, +i); return; }
   if (t.dataset.del)   {
     if (confirm("Odstranim to rastlino iz zbirke?")) {
       plants = plants.filter(p => p.id !== t.dataset.del);
