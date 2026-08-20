@@ -47,27 +47,35 @@ nav { display:flex; gap:4px; margin:16px 0 22px; }
 .tab.on { background:var(--ink); color:var(--paper); }
 
 .row {
-  display:grid; grid-template-columns:52px 46px 1fr auto; gap:13px; align-items:center;
+  display:flex; gap:14px; align-items:stretch;
   background:var(--card); border:1px solid var(--line); border-left:3px solid var(--leaf);
-  border-radius:2px; padding:13px 14px; margin-bottom:9px; width:100%; text-align:left;
+  border-radius:2px; padding:12px; margin-bottom:9px; width:100%; text-align:left;
   font:inherit; color:inherit; cursor:pointer;
 }
 .row.now  { border-left-color:var(--water); }
 .row.late { border-left-color:var(--alarm); }
 .row.soon { border-left-color:var(--feed); }
 
-.count { font-family:'JetBrains Mono',monospace; font-weight:600; font-size:25px; line-height:1; text-align:center; }
-.count small { display:block; font-size:8px; font-weight:400; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); margin-top:5px; }
+.body { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:5px; }
+.head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+
+.count { font-family:'JetBrains Mono',monospace; font-weight:600; font-size:19px; line-height:1; text-align:right; flex:0 0 auto; white-space:nowrap; }
+.count small { display:block; font-size:8px; font-weight:400; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); margin-top:3px; text-align:right; }
 .row.late .count { color:var(--alarm); }
 .row.now  .count { color:var(--water); }
 
 .nm { font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:19px; letter-spacing:.07em; text-transform:uppercase; line-height:1.1; margin:0; }
-.lat { font-style:italic; font-size:13px; color:var(--ink-soft); margin:2px 0 7px; }
+.lat { font-style:italic; font-size:13px; color:var(--ink-soft); margin:0; }
 
-.gauge { display:flex; gap:2px; align-items:flex-end; height:11px; }
+.gauge { display:flex; gap:2px; align-items:flex-end; height:11px; margin-top:1px; }
 .tick { flex:1; max-width:13px; height:5px; background:var(--line); border-radius:1px; }
 .tick.f { background:var(--water); height:11px; }
 .row.late .tick.f { background:var(--alarm); }
+
+.feedline { font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.04em; color:var(--ink-soft); margin:1px 0 0; }
+.feedline.due { color:var(--feed); font-weight:600; }
+
+.acts { display:flex; align-items:center; flex:0 0 auto; }
 
 .btn {
   font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:600; letter-spacing:.09em;
@@ -115,12 +123,12 @@ input, select {
 
 
 .pic {
-  width:46px; height:46px; border-radius:3px; object-fit:cover;
-  border:1px solid var(--line); display:block; background:var(--paper);
+  width:108px; height:108px; border-radius:3px; object-fit:cover;
+  border:1px solid var(--line); display:block; background:var(--paper); flex:0 0 108px;
 }
 .pic.none {
   border-style:dashed; display:flex; align-items:center; justify-content:center;
-  color:var(--line); font-size:17px;
+  color:var(--line); font-size:38px; flex:0 0 108px;
 }
 .hero { width:100%; max-height:280px; object-fit:cover; border-radius:3px; border:1px solid var(--line); margin:14px 0 4px; display:block; }
 .gal { display:flex; gap:7px; overflow-x:auto; padding:4px 0 8px; -webkit-overflow-scrolling:touch; }
@@ -130,9 +138,9 @@ input, select {
 .gal figure.sel img { border-color:var(--water); border-width:2px; }
 
 @media (max-width:520px){
-  .row { grid-template-columns:42px 40px 1fr; gap:10px; }
-  .pic { width:40px; height:40px; }
-  .acts { grid-column:1/-1; display:flex; gap:6px; }
+  .row { flex-wrap:wrap; gap:10px; padding:10px; }
+  .pic, .pic.none { width:84px; height:84px; flex:0 0 84px; }
+  .acts { flex:1 0 100%; gap:6px; }
   .acts .btn { flex:1; }
   h1 { font-size:25px; }
 }
@@ -266,7 +274,24 @@ function fert(p){
   return { since, due: since === null ? 0 : p.fd - since };
 }
 
-function rowHTML(p){
+function rowHTML(p, opts={}){
+  const shot = p.photos && p.photos.length ? p.photos[0].src : null;
+  const pic = shot ? `<img class="pic" src="${shot}" alt="">` : `<div class="pic none">❧</div>`;
+
+  if (opts.feed) {
+    return `<div class="row soon" data-open="${p.id}">
+      ${pic}
+      <div class="body">
+        <div class="head">
+          <h3 class="nm">${esc(p.name)}</h3>
+          <div class="count" style="color:var(--feed)">⌁<small>gnojilo</small></div>
+        </div>
+        <p class="lat">${p.lastFert ? "nazadnje "+pretty(p.lastFert) : "še ni bilo gnojeno"} · na ${p.fd} ${dw(p.fd)}</p>
+      </div>
+      <div class="acts"><button class="btn feed" data-feed="${p.id}">Pognojeno</button></div>
+    </div>`;
+  }
+
   const s = status(p);
   const ticks = Math.min(s.iv, 10);
   const rem = s.due === -999 ? 0 : Math.max(0, Math.min(ticks, Math.round((s.due/s.iv)*ticks)));
@@ -276,14 +301,19 @@ function rowHTML(p){
   else if (s.due === 0) { big="0"; lbl="danes"; }
   else                  { big=Math.abs(s.due); lbl="zamude"; }
 
-  const shot = p.photos && p.photos.length ? p.photos[0].src : null;
+  const f = fert(p);
+  const feedSoon = f && f.due <= 0;
+
   return `<div class="row ${s.cls}" data-open="${p.id}">
-    <div class="count">${big}<small>${lbl}</small></div>
-    ${shot ? `<img class="pic" src="${shot}" alt="">` : `<div class="pic none">❧</div>`}
-    <div>
-      <h3 class="nm">${esc(p.name)}</h3>
+    ${pic}
+    <div class="body">
+      <div class="head">
+        <h3 class="nm">${esc(p.name)}</h3>
+        <div class="count">${big}<small>${lbl}</small></div>
+      </div>
       <p class="lat">${p.hydro ? "v vodi · menjaj vsak teden" : esc(p.latin)}</p>
       <div class="gauge">${Array.from({length:ticks},(_,i)=>`<span class="tick ${i<rem?"f":""}"></span>`).join("")}</div>
+      ${f ? `<p class="feedline${feedSoon?" due":""}">${feedSoon ? "⌁ potrebno gnojenje" : `⌁ gnojenje čez ${f.due} ${dw(f.due)}`}</p>` : ""}
     </div>
     <div class="acts"><button class="btn" data-water="${p.id}">${p.hydro?"Menjana":"Zalito"}</button></div>
   </div>`;
@@ -312,14 +342,7 @@ function render(){
   } else h += now.map(rowHTML).join("");
 
   if (feeds.length) {
-    h += `<h2 class="sec">Za pognojiti</h2>` + feeds.map(([p]) => `
-      <div class="row soon" data-open="${p.id}">
-        <div class="count" style="color:var(--feed)">⌁<small>gnojilo</small></div>
-        ${p.photos && p.photos.length ? `<img class="pic" src="${p.photos[0].src}" alt="">` : `<div class="pic none">❧</div>`}
-        <div><h3 class="nm">${esc(p.name)}</h3>
-        <p class="lat">${p.lastFert ? "nazadnje "+pretty(p.lastFert) : "še ni bilo gnojeno"} · na ${p.fd} ${dw(p.fd)}</p></div>
-        <div class="acts"><button class="btn feed" data-feed="${p.id}">Pognojeno</button></div>
-      </div>`).join("");
+    h += `<h2 class="sec">Za pognojiti</h2>` + feeds.map(([p]) => rowHTML(p, {feed:true})).join("");
   }
   if (soon.length)  h += `<h2 class="sec">V naslednjih dveh dneh</h2>` + soon.map(rowHTML).join("");
   if (later.length) h += `<h2 class="sec">Pozneje</h2>` + later.map(rowHTML).join("");
