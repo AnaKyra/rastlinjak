@@ -337,7 +337,8 @@ function detail(id){
     ${p.photos && p.photos.length ? `<img class="hero" src="${p.photos[0].src}" alt="${esc(p.name)}">` : ""}
     ${p.photos && p.photos.length > 1 ? `<div class="gal">${p.photos.map((f,i)=>`<figure class="${i===0?"sel":""}" data-shot="${p.id}|${i}"><img src="${f.src}" alt=""><figcaption>${pretty(f.d)}</figcaption></figure>`).join("")}</div>` : ""}
     <div style="display:flex;gap:8px;margin:16px 0 4px;flex-wrap:wrap">
-      <button class="btn plain" data-shoot="${p.id}">${p.photos && p.photos.length ? "Nova fotografija" : "Dodaj fotografijo"}</button>
+      <button class="btn plain" data-cam="${p.id}">Fotografiraj</button>
+      <button class="btn plain" data-shoot="${p.id}">Izberi datoteko</button>
       <button class="btn" data-water="${p.id}">${p.hydro?"Menjal vodo danes":"Zalil danes"}</button>
       ${p.fd ? `<button class="btn feed" data-feed="${p.id}">Pognojil danes</button>` : ""}
     </div>
@@ -394,11 +395,12 @@ function shrink(file, max = 560, q = 0.72){
   });
 }
 
-function shoot(id){
+function shoot(id, cam){
   const p = plants.find(x => x.id === id);
   if (!p) return;
   const inp = document.createElement("input");
   inp.type = "file"; inp.accept = "image/*";
+  if (cam) inp.capture = "environment";
   inp.onchange = async () => {
     const f = inp.files && inp.files[0];
     if (!f) return;
@@ -434,14 +436,15 @@ function log(id, kind){
 }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-tab],[data-water],[data-feed],[data-open],[data-close],[data-veil],[data-del],[data-add],[data-shoot],[data-shot],#f-save");
+  const t = e.target.closest("[data-tab],[data-water],[data-feed],[data-open],[data-close],[data-veil],[data-del],[data-add],[data-shoot],[data-cam],[data-shot],#f-save");
   if (!t) return;
 
   if (t.dataset.tab)   { tab = t.dataset.tab; close(); render(); return; }
   if (t.dataset.water) { e.stopPropagation(); log(t.dataset.water, "w"); return; }
   if (t.dataset.feed)  { e.stopPropagation(); log(t.dataset.feed, "f"); return; }
   if (t.dataset.add)   { addForm(); return; }
-  if (t.dataset.shoot) { e.stopPropagation(); shoot(t.dataset.shoot); return; }
+  if (t.dataset.shoot) { e.stopPropagation(); shoot(t.dataset.shoot, false); return; }
+  if (t.dataset.cam)   { e.stopPropagation(); shoot(t.dataset.cam, true); return; }
   if (t.dataset.shot)  { const [pid, i] = t.dataset.shot.split("|"); dropShot(pid, +i); return; }
   if (t.dataset.del)   {
     if (confirm("Odstranim to rastlino iz zbirke?")) {
