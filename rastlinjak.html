@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E2A24">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rastlinjak">
+<title>Rastlinjak</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231E2A24'/><path d='M50 82V38M50 38c0-14 10-22 24-22 0 16-10 22-24 22zM50 52c0-12-9-19-21-19 0 14 9 19 21 19z' stroke='%234A7358' stroke-width='6' fill='none' stroke-linecap='round'/></svg>">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=JetBrains+Mono:wght@400;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --ink:#1E2A24; --ink-soft:#5A6A60; --paper:#F1F0E8; --card:#FBFAF5;
+  --line:#CFCEC0; --water:#2F6072; --feed:#9A7420; --alarm:#94382C; --leaf:#4A7358;
+}
+
+body {
+  margin:0; font-family:'Newsreader',Georgia,serif; background:var(--paper); color:var(--ink);
+  padding:0 0 90px; -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent;
+}
+.wrap { max-width:760px; margin:0 auto; padding:0 18px; }
+
+header {
+  border-bottom:1px solid var(--line); padding:calc(24px + env(safe-area-inset-top)) 0 16px;
+  display:flex; align-items:baseline; justify-content:space-between; gap:14px;
+}
+h1 {
+  font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:30px;
+  letter-spacing:.14em; text-transform:uppercase; margin:0; line-height:1;
+}
+.season {
+  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-soft); text-align:right; line-height:1.7; white-space:nowrap;
+}
+
+nav { display:flex; gap:4px; margin:16px 0 22px; }
+.tab {
+  font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:600; letter-spacing:.1em;
+  text-transform:uppercase; background:none; border:1px solid transparent; border-radius:2px;
+  color:var(--ink-soft); padding:8px 14px; cursor:pointer;
+}
+.tab.on { background:var(--ink); color:var(--paper); }
+
+.row {
+  display:grid; grid-template-columns:52px 1fr auto; gap:14px; align-items:center;
+  background:var(--card); border:1px solid var(--line); border-left:3px solid var(--leaf);
+  border-radius:2px; padding:13px 14px; margin-bottom:9px; width:100%; text-align:left;
+  font:inherit; color:inherit; cursor:pointer;
+}
+.row.now  { border-left-color:var(--water); }
+.row.late { border-left-color:var(--alarm); }
+.row.soon { border-left-color:var(--feed); }
+
+.count { font-family:'JetBrains Mono',monospace; font-weight:600; font-size:25px; line-height:1; text-align:center; }
+.count small { display:block; font-size:8px; font-weight:400; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); margin-top:5px; }
+.row.late .count { color:var(--alarm); }
+.row.now  .count { color:var(--water); }
+
+.nm { font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:19px; letter-spacing:.07em; text-transform:uppercase; line-height:1.1; margin:0; }
+.lat { font-style:italic; font-size:13px; color:var(--ink-soft); margin:2px 0 7px; }
+
+.gauge { display:flex; gap:2px; align-items:flex-end; height:11px; }
+.tick { flex:1; max-width:13px; height:5px; background:var(--line); border-radius:1px; }
+.tick.f { background:var(--water); height:11px; }
+.row.late .tick.f { background:var(--alarm); }
+
+.btn {
+  font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:600; letter-spacing:.09em;
+  text-transform:uppercase; border:1px solid var(--water); color:var(--water); background:none;
+  border-radius:2px; padding:9px 13px; cursor:pointer; white-space:nowrap;
+}
+.btn.feed { border-color:var(--feed); color:var(--feed); }
+.btn.plain { border-color:var(--line); color:var(--ink-soft); }
+.btn.danger { border-color:var(--alarm); color:var(--alarm); }
+.btn:active { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+
+.sec {
+  font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:600; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink-soft); margin:26px 0 11px; padding-bottom:6px;
+  border-bottom:1px solid var(--line);
+}
+.empty { font-style:italic; color:var(--ink-soft); font-size:15px; padding:16px 0; line-height:1.5; }
+
+.veil { position:fixed; inset:0; background:rgba(30,42,36,.55); display:flex; align-items:flex-end; justify-content:center; z-index:40; padding-top:24px; }
+.sheet {
+  background:var(--card); width:100%; max-width:760px; border-radius:6px 6px 0 0;
+  border:1px solid var(--line); border-bottom:none; max-height:92vh; overflow-y:auto;
+  padding:22px 20px calc(46px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling:touch;
+}
+.close {
+  float:right; background:none; border:none; cursor:pointer; font-family:'JetBrains Mono',monospace;
+  font-size:12px; letter-spacing:.1em; color:var(--ink-soft); text-transform:uppercase; padding:4px;
+}
+.fact { border-top:1px solid var(--line); padding:12px 0; }
+.fact dt { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px; }
+.fact dd { margin:0; font-size:15.5px; line-height:1.55; }
+.sub { color:var(--ink-soft); font-size:13.5px; }
+
+.warn { background:#F6EDE9; border-left:3px solid var(--alarm); padding:10px 12px; font-size:14.5px; line-height:1.5; margin:14px 0 0; }
+.warn.blue { background:#E9EFF2; border-left-color:var(--water); }
+
+input, select {
+  font-family:'Newsreader',serif; font-size:16px; width:100%; padding:10px;
+  border:1px solid var(--line); border-radius:2px; background:#fff; color:var(--ink); margin-bottom:10px;
+}
+.lbl { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); display:block; margin-bottom:4px; }
+.log { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink-soft); line-height:1.9; }
+:focus-visible { outline:2px solid var(--water); outline-offset:2px; }
+
+@media (max-width:520px){
+  .row { grid-template-columns:44px 1fr; }
+  .acts { grid-column:1/-1; display:flex; gap:6px; }
+  .acts .btn { flex:1; }
+  h1 { font-size:25px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Rastlinjak</h1>
+    <div class="season" id="season"></div>
+  </header>
+  <nav>
+    <button class="tab on" data-tab="danes">Danes</button>
+    <button class="tab" data-tab="zbirka">Zbirka</button>
+  </nav>
+  <div id="view"></div>
+</div>
+<div id="modal"></div>
+
+<script>
+const SEED = [
+{
+  id:"monstera", name:"Monstera", latin:"Monstera deliciosa", tag:"stara ~50 let",
+  wg:7, wr:12, fd:14, toxic:true,
+  voda:"Zalij temeljito, ko sta zgornja 2–3 cm zemlje suha — poleti približno na teden dni, pozimi na 12. Zalivaj toliko, da voda steče skozi odtočne luknje, potem krožnik izprazni. Raje malo presuho kot premokro: monstera preživi sušo, gnitje korenin pa ne.",
+  zemlja:"Zračna in odcedna: 60 % univerzalne zemlje za lončnice, 20 % perlita, 20 % lubja za orhideje. Lonec mora imeti odtočne luknje, na dno plast keramzita. Presaditev vsaki 2–3 leta spomladi, v lonec 3–4 cm širši od prejšnjega.",
+  gnojilo:"Tekoče univerzalno gnojilo za zelene rastline (NPK okoli 10-10-10), vsakih 14 dni od aprila do septembra, v polovični dozi od navedene na embalaži. Od oktobra do marca ne gnoji.",
+  svetloba:"Svetlo mesto brez direktnega sonca — nekaj metrov od južnega okna ali tik ob vzhodnem. V pretemnem kotu bodo novi listi majhni in brez značilnih zarez.",
+  posebno:"Sok draži kožo in sluznico. Zračne korenine pusti pri miru ali jih usmeri v zemljo. Liste občasno obriši z vlažno krpo — prah zmanjšuje fotosintezo. Če se rastlina preveč razpotegne, jo lahko spomladi prikrajšaš, odrezan vrh pa ukoreniniš v vodi."
+},
+{
+  id:"potaknjenec", name:"Potaknjenec monstere", latin:"Monstera deliciosa", tag:"v vodi, pripravljen za zemljo",
+  hydro:true, wg:7, wr:7, fd:0, toxic:true,
+  voda:"Dokler je v vodi: menjaj vodo enkrat na teden in posodo splakni, da se ne nabira sluz. Voda naj sega čez nodij in korenine, ne pa čez listne peclje.",
+  zemlja:"Za presaditev: lonec 12–14 cm premera (ne večji), mešanica 60 % univerzalne zemlje, 20 % perlita, 20 % lubja. Nodij naj bo tik pod površjem, korenine pokrite.",
+  gnojilo:"Prvi mesec po presaditvi ne gnoji — korenine se še privajajo na zemljo. Potem enako kot velika monstera.",
+  svetloba:"Svetlo mesto brez direktnega sonca, tako pred presaditvijo kot po njej.",
+  posebno:"Idealno okno za presaditev je, ko so korenine 5–8 cm dolge in imajo prve stranske razvejitve — dlje ko so v vodi, težje se preusmerijo na zemljo. Prve 2–3 tedne po presaditvi drži zemljo enakomerno rahlo vlažno, ne suho. Če kakšen list povesi ali porumeni, je to običajen šok presaditve."
+},
+{
+  id:"kalatea", name:"Kalatea", latin:"Goeppertia sp.", tag:"novinka", softWater:true,
+  wg:5, wr:8, fd:21,
+  voda:"Samo mehka voda: deževnica, prekuhana in ohlajena, ali voda iz pipe, ki je stala odprta 24 ur. Vedno sobne temperature. Zalij, ko je zgornji centimeter ali dva suh — substrat naj bo enakomerno rahlo vlažen, nikoli popolnoma presušen in nikoli premočen. Krožnik po 15 minutah izprazni.",
+  zemlja:"Vlagoželjna, a zračna: 60 % univerzalne zemlje, 20 % perlita, 20 % kokosovih vlaken ali finega lubja. Presaditev spomladi vsaki 1–2 leti, prvič šele mesec dni po nakupu.",
+  gnojilo:"Univerzalno tekoče gnojilo za zelene rastline, na četrtino do polovico priporočene doze, vsake 2–4 tedne od aprila do septembra. Kalatee so občutljive na presoljeno zemljo — raje manj kot več. Pozimi ne gnoji.",
+  svetloba:"Svetlo, a nikoli direktno sonce. Vzhodno ali severno okno je idealno. Direktni žarki ji zbledijo vzorec in požgejo liste.",
+  posebno:"Zračna vlaga 50–60 %. Pomaga skodelica z vodo in keramzitom pod lončkom (lonec ne sme stati v vodi) ali družba drugih rastlin; pršenje pomaga le kratkotrajno. Rjavi robovi pomenijo trdo vodo ali presuh zrak — porjavelo lahko obrežeš tik ob zdravem tkivu, nazaj se ne pozdravi."
+},
+{
+  id:"seflera", name:"Šeflera", latin:"Schefflera arboricola", tag:"drevo dežnikov",
+  wg:8, wr:14, fd:21, toxic:true,
+  voda:"Zalij, ko se posušijo zgornji 2–3 cm — poleti približno na teden dni, pozimi na dva. Ima raje bolj suho kot mokro. Odvečno vodo iz okrasnega lonca vedno odlij.",
+  zemlja:"Zračna, dobro odcedna univerzalna zemlja z 20–30 % perlita. Presaditev vsaki 2–3 leta spomladi — šeflere so rade rahlo utesnjene, zato ne pretiravaj z velikostjo lonca.",
+  gnojilo:"Univerzalno tekoče gnojilo za zelene rastline, na 2–3 tedne od aprila do septembra, v polovični dozi. Pozimi ne.",
+  svetloba:"Svetlo mesto; prenese tudi nekaj direktnega jutranjega sonca. V senci postane redka in razpotegnjena.",
+  posebno:"Sok draži kožo in sluznico. Preveri, da rastlina ni posajena neposredno v kovinski ali okrasni lonec brez odtoka — voda na dnu je najpogostejši vzrok gnitja. Če se razraste v višino, jo spomladi prikrajšaj; poganjala bo bolj grmičasto."
+},
+{
+  id:"strelicija", name:"Strelicija", latin:"Strelitzia sp.", tag:"na okenski polici",
+  wg:7, wr:14, fd:14,
+  voda:"Zalij temeljito, potem pusti, da se zgornja tretjina substrata posuši — poleti približno na teden dni, pozimi na dva. Krožnik vedno izprazni: kratko sušo prenese veliko bolje kot stalno mokre korenine.",
+  zemlja:"50 % kakovostne univerzalne zemlje, 25 % perlita ali grobe mivke, 20 % lubja za orhideje, pest komposta ali črvjega humusa. pH rahlo kisel do nevtralen (6,0–6,5). Menjaj lonec vsaki 2–3 leta — rada je nekoliko utesnjena, ker tako prej zacveti.",
+  gnojilo:"Uravnoteženo tekoče gnojilo (NPK 10-10-10 ali 20-20-20) vsakih 14 dni od marca do septembra, v polovični dozi. Za spodbujanje cvetenja spomladi preidi na gnojilo z več fosforja (15-30-15 ali gnojilo za cvetoče rastline). Pozimi ne gnoji.",
+  svetloba:"Direktno sonce je zaželeno — južno ali zahodno okno. Brez nekaj ur direktne svetlobe na dan ne bo nikoli zacvetela. Na polno sonce jo navajaj postopno, teden ali dva, sicer dobi ožige.",
+  posebno:"Cveti šele pri starosti 4–6 let in samo z veliko svetlobe; gnojilo samo po sebi cvetenja ne sproži. Debele korenine hitro razženejo lonec — občasno preveri, ali silijo iz odtočnih lukenj."
+},
+{
+  id:"dieffenbachija", name:"Dieffenbachija", latin:"Dieffenbachia sp.", tag:"strupena",
+  wg:7, wr:12, fd:21, toxic:true,
+  voda:"Zalij, ko sta zgornja 2–3 cm suha. Pozimi opazno manj. Mehkejša voda je dobrodošla, saj konice listov rjavijo od apnenca.",
+  zemlja:"Zračna univerzalna zemlja s 25 % perlita. Presaditev vsaki 1–2 leti spomladi.",
+  gnojilo:"Univerzalno tekoče gnojilo za zelene rastline na 2–3 tedne od aprila do septembra, v polovični dozi. Pozimi ne.",
+  svetloba:"Svetlo mesto brez direktnega sonca. Premalo svetlobe pomeni dolge razmike med listi in ogolelo steblo.",
+  posebno:"Sok vsebuje kalcijev oksalat in ob stiku peče ustnice, jezik in grlo — hrani jo izven dosega otrok in živali, po rezanju ali presajanju si umij roke, po možnosti nosi rokavice. Da se spodnji listi sčasoma povesijo in porumenijo, je naraven proces staranja. Če se steblo preveč razgoli, jo spomladi prikrajšaj: vrh se ukorenini v vodi, iz panja pa poženejo novi poganjki."
+},
+{
+  id:"euphorbia", name:"Euphorbia leuconeura", latin:"Euphorbia leuconeura", tag:"sukulenta",
+  wg:14, wr:30, fd:60, toxic:true,
+  voda:"Zalij šele, ko je zemlja skoraj popolnoma suha — poleti približno vsakih 10–14 dni, pozimi enkrat na mesec. Preveč vode je daleč najpogostejši vzrok propada te rastline.",
+  zemlja:"Gotova mešanica za kaktuse in sukulente, ali univerzalna zemlja z dodano tretjino perlita in grobe mivke. Lonec mora biti odcedn in raje manjši kot večji.",
+  gnojilo:"Gnojilo za kaktuse in sukulente (z manj dušika), 2–3-krat čez celotno rastno sezono. Več ni bolje — presoljena zemlja ji škodi.",
+  svetloba:"Svetlo mesto; prenese tudi nekaj direktnega sonca. Ob premalo svetlobe se razpotegne in listi postanejo redki.",
+  posebno:"Bel mlečni sok je strupen in dražeč, posebej nevaren za oči — pri rezanju in presajanju nosi rokavice in se ne dotikaj obraza. Ko dozori, semena dobesedno izstreli več metrov daleč, zato bodo čez čas vzklila v sosednjih lončkih."
+}
+];
+
+const KEY = "rastlinjak-v1";
+const $ = (s, r=document) => r.querySelector(s);
+const MON = ["jan.","feb.","mar.","apr.","maj","jun.","jul.","avg.","sep.","okt.","nov.","dec."];
+
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const today = () => iso(new Date());
+const pretty = s => { if(!s) return "—"; const d=new Date(s+"T00:00:00"); return `${d.getDate()}. ${MON[d.getMonth()]}`; };
+const diff = (a,b) => a ? Math.round((new Date(b+"T00:00:00") - new Date(a+"T00:00:00"))/86400000) : null;
+const growing = () => { const m = new Date().getMonth()+1; return m>=4 && m<=9; };
+
+function plural(n,a,b,c,d){ const x=Math.abs(n)%100; if(x===1)return a; if(x===2)return b; if(x===3||x===4)return c; return d; }
+const dw = n => plural(n,"dan","dneva","dni","dni");
+const pw = n => plural(n,"rastlina","rastlini","rastline","rastlin");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let plants = load();
+let tab = "danes";
+
+function load(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) { const d = JSON.parse(raw); if (Array.isArray(d) && d.length) return d; }
+  } catch(e){}
+  return SEED.map(p => ({...p}));
+}
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(plants)); }
+  catch(e){ console.error("shranjevanje", e); }
+}
+
+function status(p){
+  const iv = growing() ? p.wg : p.wr;
+  const since = diff(p.lastWater, today());
+  if (since === null) return { iv, since:null, due:-999, cls:"now" };
+  const due = iv - since;
+  let cls = "ok";
+  if (due <= 0) cls = "now";
+  else if (due <= 1) cls = "soon";
+  if (due <= -3) cls = "late";
+  return { iv, since, due, cls };
+}
+function fert(p){
+  if (!p.fd || !growing()) return null;
+  const since = diff(p.lastFert, today());
+  return { since, due: since === null ? 0 : p.fd - since };
+}
+
+function rowHTML(p){
+  const s = status(p);
+  const ticks = Math.min(s.iv, 10);
+  const rem = s.due === -999 ? 0 : Math.max(0, Math.min(ticks, Math.round((s.due/s.iv)*ticks)));
+  let big, lbl;
+  if (s.since === null) { big="–"; lbl="ni vpisa"; }
+  else if (s.due > 0)   { big=s.due; lbl="dni"; }
+  else if (s.due === 0) { big="0"; lbl="danes"; }
+  else                  { big=Math.abs(s.due); lbl="zamude"; }
+
+  return `<div class="row ${s.cls}" data-open="${p.id}">
+    <div class="count">${big}<small>${lbl}</small></div>
+    <div>
+      <h3 class="nm">${esc(p.name)}</h3>
+      <p class="lat">${p.hydro ? "v vodi · menjaj vsak teden" : esc(p.latin)}</p>
+      <div class="gauge">${Array.from({length:ticks},(_,i)=>`<span class="tick ${i<rem?"f":""}"></span>`).join("")}</div>
+    </div>
+    <div class="acts"><button class="btn" data-water="${p.id}">${p.hydro?"Menjana":"Zalito"}</button></div>
+  </div>`;
+}
+
+function render(){
+  $("#season").innerHTML = `${growing()?"Rastna doba":"Mirovanje"}<br>${plants.length} ${pw(plants.length)}`;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.tab === tab));
+
+  if (tab === "zbirka") {
+    $("#view").innerHTML = plants.map(rowHTML).join("") +
+      `<button class="btn plain" data-add="1" style="margin-top:14px">+ Dodaj rastlino</button>`;
+    return;
+  }
+
+  const list = [...plants].sort((a,b) => status(a).due - status(b).due);
+  const now   = list.filter(p => status(p).due <= 0);
+  const soon  = list.filter(p => status(p).due > 0 && status(p).due <= 2);
+  const later = list.filter(p => status(p).due > 2);
+  const feeds = plants.map(p => [p, fert(p)]).filter(([,f]) => f && f.due <= 0);
+
+  let h = `<h2 class="sec">Za zaliti</h2>`;
+  if (!now.length) {
+    const next = soon[0] || later[0];
+    h += `<p class="empty">Danes ni nič žejnega.${next ? ` Naslednje zalivanje čez ${status(next).due} ${dw(status(next).due)}.` : ""}</p>`;
+  } else h += now.map(rowHTML).join("");
+
+  if (feeds.length) {
+    h += `<h2 class="sec">Za pognojiti</h2>` + feeds.map(([p]) => `
+      <div class="row soon" data-open="${p.id}">
+        <div class="count" style="color:var(--feed)">⌁<small>gnojilo</small></div>
+        <div><h3 class="nm">${esc(p.name)}</h3>
+        <p class="lat">${p.lastFert ? "nazadnje "+pretty(p.lastFert) : "še ni bilo gnojeno"} · na ${p.fd} ${dw(p.fd)}</p></div>
+        <div class="acts"><button class="btn feed" data-feed="${p.id}">Pognojeno</button></div>
+      </div>`).join("");
+  }
+  if (soon.length)  h += `<h2 class="sec">V naslednjih dveh dneh</h2>` + soon.map(rowHTML).join("");
+  if (later.length) h += `<h2 class="sec">Pozneje</h2>` + later.map(rowHTML).join("");
+  $("#view").innerHTML = h;
+}
+
+function detail(id){
+  const p = plants.find(x => x.id === id);
+  if (!p) return;
+  const s = status(p), f = fert(p);
+  $("#modal").innerHTML = `<div class="veil" data-veil="1"><div class="sheet">
+    <button class="close" data-close="1">Zapri ✕</button>
+    <h2 class="nm" style="font-size:25px">${esc(p.name)}</h2>
+    <p class="lat" style="font-size:15px">${esc(p.latin)}${p.tag?" · "+esc(p.tag):""}</p>
+    <div style="display:flex;gap:8px;margin:16px 0 4px;flex-wrap:wrap">
+      <button class="btn" data-water="${p.id}">${p.hydro?"Menjal vodo danes":"Zalil danes"}</button>
+      ${p.fd ? `<button class="btn feed" data-feed="${p.id}">Pognojil danes</button>` : ""}
+    </div>
+    <dl style="margin:18px 0 0">
+      <div class="fact"><dt>Voda</dt><dd>${esc(p.voda)}<br>
+        <span class="sub">Ritem zdaj: na ${s.iv} ${dw(s.iv)} · nazadnje ${pretty(p.lastWater)}${s.since!==null?` (pred ${s.since} ${dw(s.since)})`:""}</span></dd></div>
+      <div class="fact"><dt>Zemlja</dt><dd>${esc(p.zemlja)}</dd></div>
+      <div class="fact"><dt>Gnojilo</dt><dd>${esc(p.gnojilo)}${p.fd?`<br><span class="sub">Nazadnje ${pretty(p.lastFert)}${f&&f.since!==null?` (pred ${f.since} ${dw(f.since)})`:""}</span>`:""}</dd></div>
+      <div class="fact"><dt>Svetloba</dt><dd>${esc(p.svetloba)}</dd></div>
+      ${p.posebno?`<div class="fact"><dt>Posebnosti</dt><dd>${esc(p.posebno)}</dd></div>`:""}
+    </dl>
+    ${p.softWater?`<p class="warn blue">Samo mehka voda: deževnica, prekuhana in ohlajena, ali odstana 24 ur. Vedno sobne temperature.</p>`:""}
+    ${p.toxic?`<p class="warn">Strupena — sok draži kožo in sluznico. Izven dosega otrok in živali; po rezanju ali presajanju umij roke.</p>`:""}
+    ${p.log&&p.log.length?`<h3 class="sec">Dnevnik</h3><div class="log">${p.log.slice(0,14).map(e=>`${pretty(e.d)} — ${e.k==="w"?(p.hydro?"menjana voda":"zalito"):"pognojeno"}`).join("<br>")}</div>`:""}
+    <button class="btn danger" style="margin-top:26px" data-del="${p.id}">Odstrani iz zbirke</button>
+  </div></div>`;
+}
+
+function addForm(){
+  $("#modal").innerHTML = `<div class="veil" data-veil="1"><div class="sheet">
+    <button class="close" data-close="1">Prekliči ✕</button>
+    <h2 class="nm" style="font-size:23px;margin-bottom:18px">Nova rastlina</h2>
+    <label class="lbl">Ime</label><input id="f-name" placeholder="npr. Fikus">
+    <label class="lbl">Latinsko ime</label><input id="f-latin" placeholder="Ficus elastica">
+    <div style="display:flex;gap:10px">
+      <div style="flex:1"><label class="lbl">Zalivanje poleti (dni)</label><input id="f-wg" type="number" value="7"></div>
+      <div style="flex:1"><label class="lbl">Pozimi (dni)</label><input id="f-wr" type="number" value="12"></div>
+    </div>
+    <label class="lbl">Gnojenje na koliko dni (0 = nikoli)</label><input id="f-fd" type="number" value="21">
+    <label class="lbl">Voda</label><input id="f-voda" placeholder="Kdaj in koliko zaliti">
+    <label class="lbl">Zemlja</label><input id="f-zemlja" placeholder="Kakšen substrat">
+    <label class="lbl">Gnojilo</label><input id="f-gnojilo" placeholder="Kakšno in kako pogosto">
+    <label class="lbl">Svetloba</label><input id="f-svetloba">
+    <label class="lbl">Posebnosti</label><input id="f-posebno">
+    <button class="btn" id="f-save" style="margin-top:8px">Dodaj v zbirko</button>
+  </div></div>`;
+}
+
+function close(){ $("#modal").innerHTML = ""; }
+
+function log(id, kind){
+  const p = plants.find(x => x.id === id);
+  if (!p) return;
+  const d = today();
+  p.log = [{d, k: kind}, ...(p.log || [])].slice(0, 40);
+  if (kind === "w") p.lastWater = d; else p.lastFert = d;
+  save(); render();
+  if ($(".sheet")) detail(id);
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-tab],[data-water],[data-feed],[data-open],[data-close],[data-veil],[data-del],[data-add],#f-save");
+  if (!t) return;
+
+  if (t.dataset.tab)   { tab = t.dataset.tab; close(); render(); return; }
+  if (t.dataset.water) { e.stopPropagation(); log(t.dataset.water, "w"); return; }
+  if (t.dataset.feed)  { e.stopPropagation(); log(t.dataset.feed, "f"); return; }
+  if (t.dataset.add)   { addForm(); return; }
+  if (t.dataset.del)   {
+    if (confirm("Odstranim to rastlino iz zbirke?")) {
+      plants = plants.filter(p => p.id !== t.dataset.del);
+      save(); close(); render();
+    }
+    return;
+  }
+  if (t.id === "f-save") {
+    const v = id => $("#f-"+id).value.trim();
+    if (!v("name")) return;
+    plants.push({
+      id: "p" + Date.now(), name: v("name"), latin: v("latin") || "—",
+      wg: +$("#f-wg").value || 7, wr: +$("#f-wr").value || 12, fd: +$("#f-fd").value || 0,
+      voda: v("voda") || "Zalij, ko sta zgornja 2–3 cm suha.",
+      zemlja: v("zemlja") || "Univerzalna zemlja s perlitom, lonec z odtokom.",
+      gnojilo: v("gnojilo") || "Univerzalno tekoče gnojilo v polovični dozi, april–september.",
+      svetloba: v("svetloba") || "Svetlo, brez direktnega sonca.",
+      posebno: v("posebno"), log: []
+    });
+    save(); close(); render(); return;
+  }
+  if (t.dataset.close || t.dataset.veil === "1") { close(); return; }
+  if (t.dataset.open)  { detail(t.dataset.open); return; }
+});
+
+render();
+</script>
+</body>
+</html>
