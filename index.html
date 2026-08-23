@@ -52,20 +52,28 @@ h1 {
 
 .nm { font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:19px; letter-spacing:.07em; text-transform:uppercase; line-height:1.1; margin:0; }
 .lat { font-style:italic; font-size:13px; color:var(--ink-soft); margin:0; }
+.tagline { font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.03em; color:var(--leaf); margin:1px 0 0; line-height:1.4; }
 
-.gauge { display:flex; gap:2px; align-items:flex-end; height:11px; margin-top:3px; }
-.tick { flex:1; max-width:13px; height:5px; background:var(--line); border-radius:1px; }
+.gauge-wrap { display:flex; align-items:center; gap:7px; margin-top:4px; }
+.gauge { display:flex; gap:2px; align-items:flex-end; height:11px; flex:0 0 auto; width:82px; }
+.tick { flex:1; height:5px; background:var(--line); border-radius:1px; }
 .tick.f { background:var(--water); height:11px; }
 .card.late .tick.f { background:var(--alarm); }
+.gauge-cap { font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); white-space:nowrap; }
 
-.stat { font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.03em; margin:3px 0 0; }
-.stat.ok   { color:var(--ink-soft); }
-.stat.soon { color:var(--feed); font-weight:600; }
-.stat.now  { color:var(--water); font-weight:600; }
-.stat.late { color:var(--alarm); font-weight:700; }
+.stats { display:flex; flex-wrap:wrap; gap:6px; margin-top:5px; }
+.stat {
+  display:inline-block; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.03em;
+  padding:3px 9px; border-radius:20px; white-space:nowrap;
+}
+.stat.ok   { background:rgba(90,106,96,.12);   color:var(--ink-soft); }
+.stat.soon { background:rgba(154,116,32,.14);  color:var(--feed); font-weight:600; }
+.stat.now  { background:rgba(47,96,114,.14);   color:var(--water); font-weight:600; }
+.stat.late { background:rgba(148,56,44,.14);   color:var(--alarm); font-weight:700; }
 
-.card-acts { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.card-acts { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:12px; }
 .card-acts .btn { flex:1 1 auto; }
+.card-acts .link { flex:0 0 auto; margin-left:auto; }
 
 .btn {
   font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:600; letter-spacing:.09em;
@@ -76,6 +84,14 @@ h1 {
 .btn.plain { border-color:var(--line); color:var(--ink-soft); }
 .btn.danger { border-color:var(--alarm); color:var(--alarm); }
 .btn:active { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+
+.link {
+  background:none; border:none; padding:6px 2px; cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif; font-size:12.5px; font-weight:600; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--ink-soft); text-decoration:underline; text-underline-offset:3px;
+  white-space:nowrap;
+}
+.link:active { color:var(--ink); }
 
 .sec {
   font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:600; letter-spacing:.16em;
@@ -281,13 +297,21 @@ function fertLabel(p){
   return { cls, txt:`pognojeno · še ${f.due} ${dw(f.due)}` };
 }
 
+const GAUGE_TICKS = 8;
+function gaugeHTML(s){
+  const pct = s.due === -999 ? 0 : Math.max(0, Math.min(1, s.due / s.iv));
+  const filled = Math.round(pct * GAUGE_TICKS);
+  return `<div class="gauge-wrap">
+    <div class="gauge" title="Delež časa do naslednjega zalivanja">${Array.from({length:GAUGE_TICKS},(_,i)=>`<span class="tick ${i<filled?"f":""}"></span>`).join("")}</div>
+    <span class="gauge-cap">do zalivanja</span>
+  </div>`;
+}
+
 function cardHTML(p){
   const s = status(p);
   const w = waterLabel(s);
   const fl = fertLabel(p);
   const shot = p.photos && p.photos.length ? p.photos[0].src : null;
-  const ticks = Math.min(s.iv, 10);
-  const rem = s.due === -999 ? 0 : Math.max(0, Math.min(ticks, Math.round((s.due/s.iv)*ticks)));
 
   return `<div class="card ${s.cls}">
     <div class="top" data-open="${p.id}">
@@ -295,15 +319,18 @@ function cardHTML(p){
       <div class="cinfo">
         <h3 class="nm">${esc(p.name)}</h3>
         <p class="lat">${p.hydro ? "v vodi · menjaj vsak teden" : esc(p.latin)}</p>
-        <div class="gauge">${Array.from({length:ticks},(_,i)=>`<span class="tick ${i<rem?"f":""}"></span>`).join("")}</div>
-        <p class="stat ${w.cls}">${w.txt}</p>
-        ${fl ? `<p class="stat ${fl.cls}">${fl.txt}</p>` : ""}
+        ${p.tag ? `<p class="tagline">${esc(p.tag)}</p>` : ""}
+        ${gaugeHTML(s)}
+        <div class="stats">
+          <span class="stat ${w.cls}">${w.txt}</span>
+          ${fl ? `<span class="stat ${fl.cls}">${fl.txt}</span>` : ""}
+        </div>
       </div>
     </div>
     <div class="card-acts">
       <button class="btn" data-water="${p.id}">${p.hydro?"Menjana":"Zalito"}</button>
       ${growing() && p.fd ? `<button class="btn feed" data-feed="${p.id}">Pognojeno</button>` : ""}
-      <button class="btn plain" data-status="${p.id}">+ Dodaj status</button>
+      <button class="link" data-status="${p.id}">+ status</button>
     </div>
   </div>`;
 }
@@ -324,10 +351,10 @@ function detail(id){
     <h2 class="nm" style="font-size:25px">${esc(p.name)}</h2>
     <p class="lat" style="font-size:15px">${esc(p.latin)}${p.tag?" · "+esc(p.tag):""}</p>
     ${p.photos && p.photos.length ? `<img class="hero" src="${p.photos[0].src}" alt="${esc(p.name)}">` : ""}
-    <div style="display:flex;gap:8px;margin:16px 0 4px;flex-wrap:wrap">
-      <button class="btn plain" data-status="${p.id}">+ Dodaj status</button>
+    <div style="display:flex;align-items:center;gap:8px;margin:16px 0 4px;flex-wrap:wrap">
       <button class="btn" data-water="${p.id}">${p.hydro?"Menjal vodo danes":"Zalil danes"}</button>
       ${p.fd ? `<button class="btn feed" data-feed="${p.id}">Pognojil danes</button>` : ""}
+      <button class="link" style="margin-left:auto" data-status="${p.id}">+ Dodaj status</button>
     </div>
     ${p.photos && p.photos.length ? `<h3 class="sec">Zgodovina razvoja</h3><div class="hist">${p.photos.map((ph,i)=>`
       <div class="hist-item" data-shot="${p.id}|${i}">
@@ -355,6 +382,7 @@ function addForm(){
     <h2 class="nm" style="font-size:23px;margin-bottom:18px">Nova rastlina</h2>
     <label class="lbl">Ime</label><input id="f-name" placeholder="npr. Fikus">
     <label class="lbl">Latinsko ime</label><input id="f-latin" placeholder="Ficus elastica">
+    <label class="lbl">Zanimivost / oznaka</label><input id="f-tag" placeholder="npr. stara ~50 let">
     <div style="display:flex;gap:10px">
       <div style="flex:1"><label class="lbl">Zalivanje poleti (dni)</label><input id="f-wg" type="number" value="7"></div>
       <div style="flex:1"><label class="lbl">Pozimi (dni)</label><input id="f-wr" type="number" value="12"></div>
@@ -476,7 +504,7 @@ document.addEventListener("click", e => {
     const v = id => $("#f-"+id).value.trim();
     if (!v("name")) return;
     plants.push({
-      id: "p" + Date.now(), name: v("name"), latin: v("latin") || "—",
+      id: "p" + Date.now(), name: v("name"), latin: v("latin") || "—", tag: v("tag"),
       wg: +$("#f-wg").value || 7, wr: +$("#f-wr").value || 12, fd: +$("#f-fd").value || 0,
       voda: v("voda") || "Zalij, ko sta zgornja 2–3 cm suha.",
       zemlja: v("zemlja") || "Univerzalna zemlja s perlitom, lonec z odtokom.",
