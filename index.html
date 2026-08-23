@@ -38,44 +38,34 @@ h1 {
   text-transform:uppercase; color:var(--ink-soft); text-align:right; line-height:1.7; white-space:nowrap;
 }
 
-nav { display:flex; gap:4px; margin:16px 0 22px; }
-.tab {
-  font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:600; letter-spacing:.1em;
-  text-transform:uppercase; background:none; border:1px solid transparent; border-radius:2px;
-  color:var(--ink-soft); padding:8px 14px; cursor:pointer;
-}
-.tab.on { background:var(--ink); color:var(--paper); }
-
-.row {
-  display:flex; gap:14px; align-items:stretch;
+.card {
   background:var(--card); border:1px solid var(--line); border-left:3px solid var(--leaf);
-  border-radius:2px; padding:12px; margin-bottom:9px; width:100%; text-align:left;
-  font:inherit; color:inherit; cursor:pointer;
+  border-radius:2px; padding:14px; margin-bottom:12px;
 }
-.row.now  { border-left-color:var(--water); }
-.row.late { border-left-color:var(--alarm); }
-.row.soon { border-left-color:var(--feed); }
+.card.now  { border-left-color:var(--water); }
+.card.late { border-left-color:var(--alarm); }
+.card.soon { border-left-color:var(--feed); }
 
-.body { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:5px; }
-.head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+.top { display:flex; gap:14px; align-items:flex-start; cursor:pointer; }
 
-.count { font-family:'JetBrains Mono',monospace; font-weight:600; font-size:19px; line-height:1; text-align:right; flex:0 0 auto; white-space:nowrap; }
-.count small { display:block; font-size:8px; font-weight:400; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); margin-top:3px; text-align:right; }
-.row.late .count { color:var(--alarm); }
-.row.now  .count { color:var(--water); }
+.cinfo { flex:1; min-width:0; display:flex; flex-direction:column; gap:5px; padding-top:2px; }
 
 .nm { font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:19px; letter-spacing:.07em; text-transform:uppercase; line-height:1.1; margin:0; }
 .lat { font-style:italic; font-size:13px; color:var(--ink-soft); margin:0; }
 
-.gauge { display:flex; gap:2px; align-items:flex-end; height:11px; margin-top:1px; }
+.gauge { display:flex; gap:2px; align-items:flex-end; height:11px; margin-top:3px; }
 .tick { flex:1; max-width:13px; height:5px; background:var(--line); border-radius:1px; }
 .tick.f { background:var(--water); height:11px; }
-.row.late .tick.f { background:var(--alarm); }
+.card.late .tick.f { background:var(--alarm); }
 
-.feedline { font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.04em; color:var(--ink-soft); margin:1px 0 0; }
-.feedline.due { color:var(--feed); font-weight:600; }
+.stat { font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.03em; margin:3px 0 0; }
+.stat.ok   { color:var(--ink-soft); }
+.stat.soon { color:var(--feed); font-weight:600; }
+.stat.now  { color:var(--water); font-weight:600; }
+.stat.late { color:var(--alarm); font-weight:700; }
 
-.acts { display:flex; align-items:center; flex:0 0 auto; }
+.card-acts { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.card-acts .btn { flex:1 1 auto; }
 
 .btn {
   font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:600; letter-spacing:.09em;
@@ -113,35 +103,35 @@ nav { display:flex; gap:4px; margin:16px 0 22px; }
 .warn { background:#F6EDE9; border-left:3px solid var(--alarm); padding:10px 12px; font-size:14.5px; line-height:1.5; margin:14px 0 0; }
 .warn.blue { background:#E9EFF2; border-left-color:var(--water); }
 
-input, select {
+input, select, textarea {
   font-family:'Newsreader',serif; font-size:16px; width:100%; padding:10px;
   border:1px solid var(--line); border-radius:2px; background:#fff; color:var(--ink); margin-bottom:10px;
 }
+textarea { resize:vertical; }
 .lbl { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); display:block; margin-bottom:4px; }
 .log { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink-soft); line-height:1.9; }
 :focus-visible { outline:2px solid var(--water); outline-offset:2px; }
 
 
-.pic {
-  width:108px; height:108px; border-radius:3px; object-fit:cover;
-  border:1px solid var(--line); display:block; background:var(--paper); flex:0 0 108px;
+.cpic {
+  width:45%; aspect-ratio:1/1; object-fit:cover; border-radius:3px;
+  border:1px solid var(--line); display:block; background:var(--paper); flex:0 0 45%;
 }
-.pic.none {
+.cpic.none {
   border-style:dashed; display:flex; align-items:center; justify-content:center;
-  color:var(--line); font-size:38px; flex:0 0 108px;
+  color:var(--line); font-size:44px;
 }
 .hero { width:100%; max-height:280px; object-fit:cover; border-radius:3px; border:1px solid var(--line); margin:14px 0 4px; display:block; }
-.gal { display:flex; gap:7px; overflow-x:auto; padding:4px 0 8px; -webkit-overflow-scrolling:touch; }
-.gal figure { margin:0; flex:0 0 auto; text-align:center; cursor:pointer; }
-.gal img { width:66px; height:66px; object-fit:cover; border-radius:3px; border:1px solid var(--line); display:block; }
-.gal figcaption { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--ink-soft); margin-top:4px; }
-.gal figure.sel img { border-color:var(--water); border-width:2px; }
+
+.hist { display:flex; flex-direction:column; gap:12px; }
+.hist-item { display:flex; gap:10px; align-items:flex-start; cursor:pointer; }
+.hist-item img { width:56px; height:56px; object-fit:cover; border-radius:3px; border:1px solid var(--line); display:block; flex:0 0 56px; }
+.hist-d { font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--ink-soft); letter-spacing:.04em; }
+.hist-n { margin:3px 0 0; font-size:14px; line-height:1.45; }
 
 @media (max-width:520px){
-  .row { flex-wrap:wrap; gap:10px; padding:10px; }
-  .pic, .pic.none { width:84px; height:84px; flex:0 0 84px; }
-  .acts { flex:1 0 100%; gap:6px; }
-  .acts .btn { flex:1; }
+  .card { padding:11px; }
+  .top { gap:10px; }
   h1 { font-size:25px; }
 }
 </style>
@@ -152,10 +142,6 @@ input, select {
     <h1>Rastlinjak</h1>
     <div class="season" id="season"></div>
   </header>
-  <nav>
-    <button class="tab on" data-tab="danes">Danes</button>
-    <button class="tab" data-tab="zbirka">Zbirka</button>
-  </nav>
   <div id="view"></div>
 </div>
 <div id="modal"></div>
@@ -243,7 +229,7 @@ const pw = n => plural(n,"rastlina","rastlini","rastline","rastlin");
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 let plants = load();
-let tab = "danes";
+let pendingShot = null;
 
 function load(){
   try {
@@ -274,79 +260,59 @@ function fert(p){
   return { since, due: since === null ? 0 : p.fd - since };
 }
 
-function rowHTML(p, opts={}){
-  const shot = p.photos && p.photos.length ? p.photos[0].src : null;
-  const pic = shot ? `<img class="pic" src="${shot}" alt="">` : `<div class="pic none">❧</div>`;
+function waterLabel(s){
+  if (s.since === null) return { cls:"now", txt:"ni vpisa zalivanja" };
+  if (s.cls === "late") return { cls:"late", txt:`nujno zalij · zamuja ${Math.abs(s.due)} ${dw(Math.abs(s.due))}` };
+  if (s.cls === "now")  return { cls:"now",  txt:"zalij danes" };
+  if (s.cls === "soon") return { cls:"soon", txt:`zalij čez ${s.due} ${dw(s.due)}` };
+  return { cls:"ok", txt:`zalito · še ${s.due} ${dw(s.due)}` };
+}
+function fertLabel(p){
+  const f = fert(p);
+  if (!f) return null;
+  if (f.since === null) return { cls:"now", txt:"ni vpisa gnojenja" };
+  let cls = "ok";
+  if (f.due <= 0) cls = "now";
+  else if (f.due <= 1) cls = "soon";
+  if (f.due <= -3) cls = "late";
+  if (cls === "late") return { cls, txt:`nujno pognoji · zamuja ${Math.abs(f.due)} ${dw(Math.abs(f.due))}` };
+  if (cls === "now")  return { cls, txt:"pognoji danes" };
+  if (cls === "soon") return { cls, txt:`pognoji čez ${f.due} ${dw(f.due)}` };
+  return { cls, txt:`pognojeno · še ${f.due} ${dw(f.due)}` };
+}
 
-  if (opts.feed) {
-    return `<div class="row soon" data-open="${p.id}">
-      ${pic}
-      <div class="body">
-        <div class="head">
-          <h3 class="nm">${esc(p.name)}</h3>
-          <div class="count" style="color:var(--feed)">⌁<small>gnojilo</small></div>
-        </div>
-        <p class="lat">${p.lastFert ? "nazadnje "+pretty(p.lastFert) : "še ni bilo gnojeno"} · na ${p.fd} ${dw(p.fd)}</p>
-      </div>
-      <div class="acts"><button class="btn feed" data-feed="${p.id}">Pognojeno</button></div>
-    </div>`;
-  }
-
+function cardHTML(p){
   const s = status(p);
+  const w = waterLabel(s);
+  const fl = fertLabel(p);
+  const shot = p.photos && p.photos.length ? p.photos[0].src : null;
   const ticks = Math.min(s.iv, 10);
   const rem = s.due === -999 ? 0 : Math.max(0, Math.min(ticks, Math.round((s.due/s.iv)*ticks)));
-  let big, lbl;
-  if (s.since === null) { big="–"; lbl="ni vpisa"; }
-  else if (s.due > 0)   { big=s.due; lbl="dni"; }
-  else if (s.due === 0) { big="0"; lbl="danes"; }
-  else                  { big=Math.abs(s.due); lbl="zamude"; }
 
-  const f = fert(p);
-  const feedSoon = f && f.due <= 0;
-
-  return `<div class="row ${s.cls}" data-open="${p.id}">
-    ${pic}
-    <div class="body">
-      <div class="head">
+  return `<div class="card ${s.cls}">
+    <div class="top" data-open="${p.id}">
+      ${shot ? `<img class="cpic" src="${shot}" alt="">` : `<div class="cpic none">❧</div>`}
+      <div class="cinfo">
         <h3 class="nm">${esc(p.name)}</h3>
-        <div class="count">${big}<small>${lbl}</small></div>
+        <p class="lat">${p.hydro ? "v vodi · menjaj vsak teden" : esc(p.latin)}</p>
+        <div class="gauge">${Array.from({length:ticks},(_,i)=>`<span class="tick ${i<rem?"f":""}"></span>`).join("")}</div>
+        <p class="stat ${w.cls}">${w.txt}</p>
+        ${fl ? `<p class="stat ${fl.cls}">${fl.txt}</p>` : ""}
       </div>
-      <p class="lat">${p.hydro ? "v vodi · menjaj vsak teden" : esc(p.latin)}</p>
-      <div class="gauge">${Array.from({length:ticks},(_,i)=>`<span class="tick ${i<rem?"f":""}"></span>`).join("")}</div>
-      ${f ? `<p class="feedline${feedSoon?" due":""}">${feedSoon ? "⌁ potrebno gnojenje" : `⌁ gnojenje čez ${f.due} ${dw(f.due)}`}</p>` : ""}
     </div>
-    <div class="acts"><button class="btn" data-water="${p.id}">${p.hydro?"Menjana":"Zalito"}</button></div>
+    <div class="card-acts">
+      <button class="btn" data-water="${p.id}">${p.hydro?"Menjana":"Zalito"}</button>
+      ${growing() && p.fd ? `<button class="btn feed" data-feed="${p.id}">Pognojeno</button>` : ""}
+      <button class="btn plain" data-status="${p.id}">+ Dodaj status</button>
+    </div>
   </div>`;
 }
 
 function render(){
   $("#season").innerHTML = `${growing()?"Rastna doba":"Mirovanje"}<br>${plants.length} ${pw(plants.length)}`;
-  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.tab === tab));
-
-  if (tab === "zbirka") {
-    $("#view").innerHTML = plants.map(rowHTML).join("") +
-      `<button class="btn plain" data-add="1" style="margin-top:14px">+ Dodaj rastlino</button>`;
-    return;
-  }
-
   const list = [...plants].sort((a,b) => status(a).due - status(b).due);
-  const now   = list.filter(p => status(p).due <= 0);
-  const soon  = list.filter(p => status(p).due > 0 && status(p).due <= 2);
-  const later = list.filter(p => status(p).due > 2);
-  const feeds = plants.map(p => [p, fert(p)]).filter(([,f]) => f && f.due <= 0);
-
-  let h = `<h2 class="sec">Za zaliti</h2>`;
-  if (!now.length) {
-    const next = soon[0] || later[0];
-    h += `<p class="empty">Danes ni nič žejnega.${next ? ` Naslednje zalivanje čez ${status(next).due} ${dw(status(next).due)}.` : ""}</p>`;
-  } else h += now.map(rowHTML).join("");
-
-  if (feeds.length) {
-    h += `<h2 class="sec">Za pognojiti</h2>` + feeds.map(([p]) => rowHTML(p, {feed:true})).join("");
-  }
-  if (soon.length)  h += `<h2 class="sec">V naslednjih dveh dneh</h2>` + soon.map(rowHTML).join("");
-  if (later.length) h += `<h2 class="sec">Pozneje</h2>` + later.map(rowHTML).join("");
-  $("#view").innerHTML = h;
+  $("#view").innerHTML = list.map(cardHTML).join("") +
+    `<button class="btn plain" data-add="1" style="margin-top:6px">+ Dodaj rastlino</button>`;
 }
 
 function detail(id){
@@ -358,13 +324,16 @@ function detail(id){
     <h2 class="nm" style="font-size:25px">${esc(p.name)}</h2>
     <p class="lat" style="font-size:15px">${esc(p.latin)}${p.tag?" · "+esc(p.tag):""}</p>
     ${p.photos && p.photos.length ? `<img class="hero" src="${p.photos[0].src}" alt="${esc(p.name)}">` : ""}
-    ${p.photos && p.photos.length > 1 ? `<div class="gal">${p.photos.map((f,i)=>`<figure class="${i===0?"sel":""}" data-shot="${p.id}|${i}"><img src="${f.src}" alt=""><figcaption>${pretty(f.d)}</figcaption></figure>`).join("")}</div>` : ""}
     <div style="display:flex;gap:8px;margin:16px 0 4px;flex-wrap:wrap">
-      <button class="btn plain" data-cam="${p.id}">Fotografiraj</button>
-      <button class="btn plain" data-shoot="${p.id}">Izberi datoteko</button>
+      <button class="btn plain" data-status="${p.id}">+ Dodaj status</button>
       <button class="btn" data-water="${p.id}">${p.hydro?"Menjal vodo danes":"Zalil danes"}</button>
       ${p.fd ? `<button class="btn feed" data-feed="${p.id}">Pognojil danes</button>` : ""}
     </div>
+    ${p.photos && p.photos.length ? `<h3 class="sec">Zgodovina razvoja</h3><div class="hist">${p.photos.map((ph,i)=>`
+      <div class="hist-item" data-shot="${p.id}|${i}">
+        <img src="${ph.src}" alt="">
+        <div><span class="hist-d">${pretty(ph.d)}</span>${ph.note?`<p class="hist-n">${esc(ph.note)}</p>`:""}</div>
+      </div>`).join("")}</div>` : ""}
     <dl style="margin:18px 0 0">
       <div class="fact"><dt>Voda</dt><dd>${esc(p.voda)}<br>
         <span class="sub">Ritem zdaj: na ${s.iv} ${dw(s.iv)} · nazadnje ${pretty(p.lastWater)}${s.since!==null?` (pred ${s.since} ${dw(s.since)})`:""}</span></dd></div>
@@ -400,7 +369,7 @@ function addForm(){
   </div></div>`;
 }
 
-function close(){ $("#modal").innerHTML = ""; }
+function close(){ $("#modal").innerHTML = ""; pendingShot = null; }
 
 function shrink(file, max = 560, q = 0.72){
   return new Promise((res, rej) => {
@@ -418,24 +387,50 @@ function shrink(file, max = 560, q = 0.72){
   });
 }
 
-function shoot(id, cam){
+function addStatus(id){
   const p = plants.find(x => x.id === id);
   if (!p) return;
+  pendingShot = null;
+  $("#modal").innerHTML = `<div class="veil" data-veil="1"><div class="sheet">
+    <button class="close" data-close="1">Prekliči ✕</button>
+    <h2 class="nm" style="font-size:23px;margin-bottom:14px">Nov status · ${esc(p.name)}</h2>
+    <div id="status-pic"></div>
+    <div style="display:flex;gap:8px;margin:10px 0 14px;flex-wrap:wrap">
+      <button class="btn plain" data-cam-status="${p.id}">Fotografiraj</button>
+      <button class="btn plain" data-shoot-status="${p.id}">Izberi datoteko</button>
+    </div>
+    <label class="lbl">Opažanje (neobvezno)</label>
+    <textarea id="status-note" rows="4" placeholder="Kako kaže rastlina, kaj potrebuje ..."></textarea>
+    <button class="btn" id="status-save" data-save-status="${p.id}" style="margin-top:6px" disabled>Shrani</button>
+  </div></div>`;
+}
+
+function pickStatusPhoto(cam){
   const inp = document.createElement("input");
   inp.type = "file"; inp.accept = "image/*";
   if (cam) inp.capture = "environment";
   inp.onchange = async () => {
     const f = inp.files && inp.files[0];
     if (!f) return;
-    let src;
-    try { src = await shrink(f); }
+    try { pendingShot = await shrink(f); }
     catch(e){ alert("Slike ni bilo mogoče prebrati. Poskusi z drugo."); return; }
-    const backup = p.photos ? [...p.photos] : [];
-    p.photos = [{ d: today(), src }, ...backup].slice(0, 8);
-    if (!save()) { p.photos = backup; alert("Shramba je polna. Izbriši nekaj starih fotografij, pa poskusi znova."); }
-    render(); detail(id);
+    const pic = $("#status-pic");
+    if (pic) pic.innerHTML = `<img src="${pendingShot}" style="width:100%;max-height:220px;object-fit:cover;border-radius:3px;border:1px solid var(--line);display:block">`;
+    const btn = $("#status-save");
+    if (btn) btn.disabled = false;
   };
   inp.click();
+}
+
+function saveStatus(id){
+  const p = plants.find(x => x.id === id);
+  if (!p || !pendingShot) return;
+  const note = $("#status-note").value.trim();
+  const backup = p.photos ? [...p.photos] : [];
+  p.photos = [{ d: today(), src: pendingShot, note: note || undefined }, ...backup].slice(0, 8);
+  if (!save()) { p.photos = backup; alert("Shramba je polna. Izbriši nekaj starih fotografij, pa poskusi znova."); return; }
+  pendingShot = null;
+  render(); detail(id);
 }
 
 function dropShot(id, i){
@@ -459,15 +454,16 @@ function log(id, kind){
 }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-tab],[data-water],[data-feed],[data-open],[data-close],[data-veil],[data-del],[data-add],[data-shoot],[data-cam],[data-shot],#f-save");
+  const t = e.target.closest("[data-water],[data-feed],[data-open],[data-close],[data-veil],[data-del],[data-add],[data-status],[data-cam-status],[data-shoot-status],[data-save-status],[data-shot],#f-save");
   if (!t) return;
 
-  if (t.dataset.tab)   { tab = t.dataset.tab; close(); render(); return; }
   if (t.dataset.water) { e.stopPropagation(); log(t.dataset.water, "w"); return; }
   if (t.dataset.feed)  { e.stopPropagation(); log(t.dataset.feed, "f"); return; }
   if (t.dataset.add)   { addForm(); return; }
-  if (t.dataset.shoot) { e.stopPropagation(); shoot(t.dataset.shoot, false); return; }
-  if (t.dataset.cam)   { e.stopPropagation(); shoot(t.dataset.cam, true); return; }
+  if (t.dataset.status)       { e.stopPropagation(); addStatus(t.dataset.status); return; }
+  if (t.dataset.camStatus)    { pickStatusPhoto(true); return; }
+  if (t.dataset.shootStatus)  { pickStatusPhoto(false); return; }
+  if (t.dataset.saveStatus)   { saveStatus(t.dataset.saveStatus); return; }
   if (t.dataset.shot)  { const [pid, i] = t.dataset.shot.split("|"); dropShot(pid, +i); return; }
   if (t.dataset.del)   {
     if (confirm("Odstranim to rastlino iz zbirke?")) {
