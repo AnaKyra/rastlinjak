@@ -48,13 +48,14 @@ h1 {
 
 .top { display:flex; gap:14px; align-items:flex-start; cursor:pointer; }
 
+.picwrap { flex:0 0 45%; display:flex; flex-direction:column; gap:8px; }
 .cinfo { flex:1; min-width:0; display:flex; flex-direction:column; gap:5px; padding-top:2px; }
 
 .nm { font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:19px; letter-spacing:.07em; text-transform:uppercase; line-height:1.1; margin:0; }
 .lat { font-style:italic; font-size:13px; color:var(--ink-soft); margin:0; }
 .tagline { font-family:'Newsreader',serif; font-style:italic; font-size:13px; line-height:1.45; color:var(--leaf); margin:4px 0 0; }
 
-.stats { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.stats { display:flex; flex-wrap:wrap; gap:6px; }
 .stat {
   display:inline-block; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.03em;
   padding:3px 9px; border-radius:20px; white-space:nowrap;
@@ -121,11 +122,11 @@ textarea { resize:vertical; }
 
 
 .cpic {
-  width:45%; aspect-ratio:1/1; object-fit:cover; border-radius:3px;
-  border:1px solid var(--line); display:block; background:var(--paper); flex:0 0 45%;
+  width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:3px;
+  border:1px solid var(--line); display:block; background:var(--paper);
 }
 .cpic.none {
-  border-style:dashed; display:flex; align-items:center; justify-content:center;
+  aspect-ratio:1/1; border-style:dashed; display:flex; align-items:center; justify-content:center;
   color:var(--line); font-size:44px;
 }
 .hero { width:100%; max-height:280px; object-fit:cover; border-radius:3px; border:1px solid var(--line); margin:14px 0 4px; display:block; }
@@ -303,15 +304,17 @@ function cardHTML(p){
 
   return `<div class="card ${s.cls}">
     <div class="top" data-open="${p.id}">
-      ${shot ? `<img class="cpic" src="${shot}" alt="">` : `<div class="cpic none">❧</div>`}
-      <div class="cinfo">
-        <h3 class="nm">${esc(p.name)}</h3>
-        <p class="lat">${p.hydro ? "v vodi · menjaj vsak teden" : esc(p.latin)}</p>
-        ${p.zanimivost ? `<p class="tagline">${esc(p.zanimivost)}</p>` : ""}
+      <div class="picwrap">
+        ${shot ? `<img class="cpic" src="${shot}" alt="">` : `<div class="cpic none">❧</div>`}
         <div class="stats">
           <span class="stat ${w.cls}">${w.txt}</span>
           ${fl ? `<span class="stat ${fl.cls}">${fl.txt}</span>` : ""}
         </div>
+      </div>
+      <div class="cinfo">
+        <h3 class="nm">${esc(p.name)}</h3>
+        <p class="lat">${p.hydro ? "v vodi · menjaj vsak teden" : esc(p.latin)}</p>
+        ${p.zanimivost ? `<p class="tagline">${esc(p.zanimivost)}</p>` : ""}
       </div>
     </div>
     <div class="card-acts">
@@ -340,6 +343,7 @@ function detail(id){
       <button class="btn" data-water="${p.id}">${p.hydro?"Menjal vodo danes":"Zalil danes"}</button>
       ${p.fd ? `<button class="btn feed" data-feed="${p.id}">Pognojil danes</button>` : ""}
       <button class="link" style="margin-left:auto" data-status="${p.id}">+ Dodaj status</button>
+      <button class="link" data-edit="${p.id}">Uredi</button>
     </div>
     ${p.photos && p.photos.length ? `<h3 class="sec">Zgodovina razvoja</h3><div class="hist">${p.photos.map((ph,i)=>`
       <div class="hist-item" data-shot="${p.id}|${i}">
@@ -361,24 +365,26 @@ function detail(id){
   </div></div>`;
 }
 
-function addForm(){
+function plantForm(id){
+  const p = id ? plants.find(x => x.id === id) : null;
+  const v = (field, def="") => esc(p && p[field] != null ? p[field] : def);
   $("#modal").innerHTML = `<div class="veil" data-veil="1"><div class="sheet">
     <button class="close" data-close="1">Prekliči ✕</button>
-    <h2 class="nm" style="font-size:23px;margin-bottom:18px">Nova rastlina</h2>
-    <label class="lbl">Ime</label><input id="f-name" placeholder="npr. Fikus">
-    <label class="lbl">Latinsko ime</label><input id="f-latin" placeholder="Ficus elastica">
-    <label class="lbl">Zanimivost / zgodba (neobvezno)</label><input id="f-tag" placeholder="Kratka zanimivost ali mit o rastlini">
+    <h2 class="nm" style="font-size:23px;margin-bottom:18px">${p ? "Uredi rastlino" : "Nova rastlina"}</h2>
+    <label class="lbl">Ime</label><input id="f-name" placeholder="npr. Fikus" value="${v("name")}">
+    <label class="lbl">Latinsko ime</label><input id="f-latin" placeholder="Ficus elastica" value="${v("latin")}">
+    <label class="lbl">Zanimivost / zgodba (neobvezno)</label><input id="f-tag" placeholder="Kratka zanimivost ali mit o rastlini" value="${v("zanimivost")}">
     <div style="display:flex;gap:10px">
-      <div style="flex:1"><label class="lbl">Zalivanje poleti (dni)</label><input id="f-wg" type="number" value="7"></div>
-      <div style="flex:1"><label class="lbl">Pozimi (dni)</label><input id="f-wr" type="number" value="12"></div>
+      <div style="flex:1"><label class="lbl">Zalivanje poleti (dni)</label><input id="f-wg" type="number" value="${v("wg",7)}"></div>
+      <div style="flex:1"><label class="lbl">Pozimi (dni)</label><input id="f-wr" type="number" value="${v("wr",12)}"></div>
     </div>
-    <label class="lbl">Gnojenje na koliko dni (0 = nikoli)</label><input id="f-fd" type="number" value="21">
-    <label class="lbl">Voda</label><input id="f-voda" placeholder="Kdaj in koliko zaliti">
-    <label class="lbl">Zemlja</label><input id="f-zemlja" placeholder="Kakšen substrat">
-    <label class="lbl">Gnojilo</label><input id="f-gnojilo" placeholder="Kakšno in kako pogosto">
-    <label class="lbl">Svetloba</label><input id="f-svetloba">
-    <label class="lbl">Posebnosti</label><input id="f-posebno">
-    <button class="btn" id="f-save" style="margin-top:8px">Dodaj v zbirko</button>
+    <label class="lbl">Gnojenje na koliko dni (0 = nikoli)</label><input id="f-fd" type="number" value="${v("fd",21)}">
+    <label class="lbl">Voda</label><input id="f-voda" placeholder="Kdaj in koliko zaliti" value="${v("voda")}">
+    <label class="lbl">Zemlja</label><input id="f-zemlja" placeholder="Kakšen substrat" value="${v("zemlja")}">
+    <label class="lbl">Gnojilo</label><input id="f-gnojilo" placeholder="Kakšno in kako pogosto" value="${v("gnojilo")}">
+    <label class="lbl">Svetloba</label><input id="f-svetloba" value="${v("svetloba")}">
+    <label class="lbl">Posebnosti</label><input id="f-posebno" value="${v("posebno")}">
+    <button class="btn" id="f-save" data-edit-id="${id||""}" style="margin-top:8px">${p ? "Shrani spremembe" : "Dodaj v zbirko"}</button>
   </div></div>`;
 }
 
@@ -467,12 +473,13 @@ function log(id, kind){
 }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-water],[data-feed],[data-open],[data-close],[data-veil],[data-del],[data-add],[data-status],[data-cam-status],[data-shoot-status],[data-save-status],[data-shot],#f-save");
+  const t = e.target.closest("[data-water],[data-feed],[data-open],[data-close],[data-veil],[data-del],[data-add],[data-edit],[data-status],[data-cam-status],[data-shoot-status],[data-save-status],[data-shot],#f-save");
   if (!t) return;
 
   if (t.dataset.water) { e.stopPropagation(); log(t.dataset.water, "w"); return; }
   if (t.dataset.feed)  { e.stopPropagation(); log(t.dataset.feed, "f"); return; }
-  if (t.dataset.add)   { addForm(); return; }
+  if (t.dataset.add)   { plantForm(null); return; }
+  if (t.dataset.edit)  { e.stopPropagation(); plantForm(t.dataset.edit); return; }
   if (t.dataset.status)       { e.stopPropagation(); addStatus(t.dataset.status); return; }
   if (t.dataset.camStatus)    { pickStatusPhoto(true); return; }
   if (t.dataset.shootStatus)  { pickStatusPhoto(false); return; }
@@ -488,16 +495,25 @@ document.addEventListener("click", e => {
   if (t.id === "f-save") {
     const v = id => $("#f-"+id).value.trim();
     if (!v("name")) return;
-    plants.push({
-      id: "p" + Date.now(), name: v("name"), latin: v("latin") || "—", zanimivost: v("tag"),
+    const data = {
+      name: v("name"), latin: v("latin") || "—", zanimivost: v("tag"),
       wg: +$("#f-wg").value || 7, wr: +$("#f-wr").value || 12, fd: +$("#f-fd").value || 0,
       voda: v("voda") || "Zalij, ko sta zgornja 2–3 cm suha.",
       zemlja: v("zemlja") || "Univerzalna zemlja s perlitom, lonec z odtokom.",
       gnojilo: v("gnojilo") || "Univerzalno tekoče gnojilo v polovični dozi, april–september.",
       svetloba: v("svetloba") || "Svetlo, brez direktnega sonca.",
-      posebno: v("posebno"), log: []
-    });
-    save(); close(); render(); return;
+      posebno: v("posebno")
+    };
+    const editId = t.dataset.editId;
+    if (editId) {
+      const p = plants.find(x => x.id === editId);
+      if (p) Object.assign(p, data);
+    } else {
+      plants.push({ id: "p" + Date.now(), log: [], ...data });
+    }
+    save(); close(); render();
+    if (editId) detail(editId);
+    return;
   }
   if (t.dataset.close || t.dataset.veil === "1") { close(); return; }
   if (t.dataset.open)  { detail(t.dataset.open); return; }
