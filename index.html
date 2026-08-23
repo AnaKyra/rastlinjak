@@ -52,16 +52,9 @@ h1 {
 
 .nm { font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:19px; letter-spacing:.07em; text-transform:uppercase; line-height:1.1; margin:0; }
 .lat { font-style:italic; font-size:13px; color:var(--ink-soft); margin:0; }
-.tagline { font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.03em; color:var(--leaf); margin:1px 0 0; line-height:1.4; }
+.tagline { font-family:'Newsreader',serif; font-style:italic; font-size:13px; line-height:1.45; color:var(--leaf); margin:4px 0 0; }
 
-.gauge-wrap { display:flex; align-items:center; gap:7px; margin-top:4px; }
-.gauge { display:flex; gap:2px; align-items:flex-end; height:11px; flex:0 0 auto; width:82px; }
-.tick { flex:1; height:5px; background:var(--line); border-radius:1px; }
-.tick.f { background:var(--water); height:11px; }
-.card.late .tick.f { background:var(--alarm); }
-.gauge-cap { font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); white-space:nowrap; }
-
-.stats { display:flex; flex-wrap:wrap; gap:6px; margin-top:5px; }
+.stats { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
 .stat {
   display:inline-block; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.03em;
   padding:3px 9px; border-radius:20px; white-space:nowrap;
@@ -71,9 +64,7 @@ h1 {
 .stat.now  { background:rgba(47,96,114,.14);   color:var(--water); font-weight:600; }
 .stat.late { background:rgba(148,56,44,.14);   color:var(--alarm); font-weight:700; }
 
-.card-acts { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:12px; }
-.card-acts .btn { flex:1 1 auto; }
-.card-acts .link { flex:0 0 auto; margin-left:auto; }
+.card-acts { display:flex; justify-content:flex-end; margin-top:10px; }
 
 .btn {
   font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:600; letter-spacing:.09em;
@@ -171,7 +162,8 @@ const SEED = [
   zemlja:"Zračna in odcedna: 60 % univerzalne zemlje za lončnice, 20 % perlita, 20 % lubja za orhideje. Lonec mora imeti odtočne luknje, na dno plast keramzita. Presaditev vsaki 2–3 leta spomladi, v lonec 3–4 cm širši od prejšnjega.",
   gnojilo:"Tekoče univerzalno gnojilo za zelene rastline (NPK okoli 10-10-10), vsakih 14 dni od aprila do septembra, v polovični dozi od navedene na embalaži. Od oktobra do marca ne gnoji.",
   svetloba:"Svetlo mesto brez direktnega sonca — nekaj metrov od južnega okna ali tik ob vzhodnem. V pretemnem kotu bodo novi listi majhni in brez značilnih zarez.",
-  posebno:"Sok draži kožo in sluznico. Zračne korenine pusti pri miru ali jih usmeri v zemljo. Liste občasno obriši z vlažno krpo — prah zmanjšuje fotosintezo. Če se rastlina preveč razpotegne, jo lahko spomladi prikrajšaš, odrezan vrh pa ukoreniniš v vodi."
+  posebno:"Sok draži kožo in sluznico. Zračne korenine pusti pri miru ali jih usmeri v zemljo. Liste občasno obriši z vlažno krpo — prah zmanjšuje fotosintezo. Če se rastlina preveč razpotegne, jo lahko spomladi prikrajšaš, odrezan vrh pa ukoreniniš v vodi.",
+  zanimivost:"Ime „deliciosa“ ji je dal botanik po okusu zrelega ploda, ki dozoreva več mesecev in naj bi spominjal na mešanico ananasa in banane — nezrel je strupen. Značilne luknje v listih (fenestracija) naj bi ji v naravi pomagale, da veter in tropski nalivi lažje stečejo skozi krošnjo."
 },
 {
   id:"potaknjenec", name:"Potaknjenec monstere", latin:"Monstera deliciosa", tag:"v vodi, pripravljen za zemljo",
@@ -180,7 +172,8 @@ const SEED = [
   zemlja:"Za presaditev: lonec 12–14 cm premera (ne večji), mešanica 60 % univerzalne zemlje, 20 % perlita, 20 % lubja. Nodij naj bo tik pod površjem, korenine pokrite.",
   gnojilo:"Prvi mesec po presaditvi ne gnoji — korenine se še privajajo na zemljo. Potem enako kot velika monstera.",
   svetloba:"Svetlo mesto brez direktnega sonca, tako pred presaditvijo kot po njej.",
-  posebno:"Idealno okno za presaditev je, ko so korenine 5–8 cm dolge in imajo prve stranske razvejitve — dlje ko so v vodi, težje se preusmerijo na zemljo. Prve 2–3 tedne po presaditvi drži zemljo enakomerno rahlo vlažno, ne suho. Če kakšen list povesi ali porumeni, je to običajen šok presaditve."
+  posebno:"Idealno okno za presaditev je, ko so korenine 5–8 cm dolge in imajo prve stranske razvejitve — dlje ko so v vodi, težje se preusmerijo na zemljo. Prve 2–3 tedne po presaditvi drži zemljo enakomerno rahlo vlažno, ne suho. Če kakšen list povesi ali porumeni, je to običajen šok presaditve.",
+  zanimivost:"Monstera je ena redkih priljubljenih sobnih rastlin, ki v navadni vodi zlahka poženejo korenine. V naravi po podobnem načelu z zračnimi koreninami oprijema debla dreves in po njih pleza visoko v krošnjo, kjer je več svetlobe."
 },
 {
   id:"kalatea", name:"Kalatea", latin:"Goeppertia sp.", tag:"novinka", softWater:true,
@@ -189,7 +182,8 @@ const SEED = [
   zemlja:"Vlagoželjna, a zračna: 60 % univerzalne zemlje, 20 % perlita, 20 % kokosovih vlaken ali finega lubja. Presaditev spomladi vsaki 1–2 leti, prvič šele mesec dni po nakupu.",
   gnojilo:"Univerzalno tekoče gnojilo za zelene rastline, na četrtino do polovico priporočene doze, vsake 2–4 tedne od aprila do septembra. Kalatee so občutljive na presoljeno zemljo — raje manj kot več. Pozimi ne gnoji.",
   svetloba:"Svetlo, a nikoli direktno sonce. Vzhodno ali severno okno je idealno. Direktni žarki ji zbledijo vzorec in požgejo liste.",
-  posebno:"Zračna vlaga 50–60 %. Pomaga skodelica z vodo in keramzitom pod lončkom (lonec ne sme stati v vodi) ali družba drugih rastlin; pršenje pomaga le kratkotrajno. Rjavi robovi pomenijo trdo vodo ali presuh zrak — porjavelo lahko obrežeš tik ob zdravem tkivu, nazaj se ne pozdravi."
+  posebno:"Zračna vlaga 50–60 %. Pomaga skodelica z vodo in keramzitom pod lončkom (lonec ne sme stati v vodi) ali družba drugih rastlin; pršenje pomaga le kratkotrajno. Rjavi robovi pomenijo trdo vodo ali presuh zrak — porjavelo lahko obrežeš tik ob zdravem tkivu, nazaj se ne pozdravi.",
+  zanimivost:"Kalatee spadajo med t. i. „rastline molitve“ — zvečer dvignejo liste navpično, kot dlani sklenjene v molitvi, čez dan pa jih spet razprejo vodoravno. Ta dnevni ritem uravnava notranja biološka ura rastline, ne le svetloba v sobi."
 },
 {
   id:"seflera", name:"Šeflera", latin:"Schefflera arboricola", tag:"drevo dežnikov",
@@ -198,7 +192,8 @@ const SEED = [
   zemlja:"Zračna, dobro odcedna univerzalna zemlja z 20–30 % perlita. Presaditev vsaki 2–3 leta spomladi — šeflere so rade rahlo utesnjene, zato ne pretiravaj z velikostjo lonca.",
   gnojilo:"Univerzalno tekoče gnojilo za zelene rastline, na 2–3 tedne od aprila do septembra, v polovični dozi. Pozimi ne.",
   svetloba:"Svetlo mesto; prenese tudi nekaj direktnega jutranjega sonca. V senci postane redka in razpotegnjena.",
-  posebno:"Sok draži kožo in sluznico. Preveri, da rastlina ni posajena neposredno v kovinski ali okrasni lonec brez odtoka — voda na dnu je najpogostejši vzrok gnitja. Če se razraste v višino, jo spomladi prikrajšaj; poganjala bo bolj grmičasto."
+  posebno:"Sok draži kožo in sluznico. Preveri, da rastlina ni posajena neposredno v kovinski ali okrasni lonec brez odtoka — voda na dnu je najpogostejši vzrok gnitja. Če se razraste v višino, jo spomladi prikrajšaj; poganjala bo bolj grmičasto.",
+  zanimivost:"Ime „dežnikovo drevo“ izhaja iz razporeditve listčkov, ki iz ene točke štrlijo navzven kot rebra razprtega dežnika. V fengšuju ji pravijo tudi rastlina osmih bogastev in naj bi vejica z natanko osmimi listički prinašala srečo."
 },
 {
   id:"strelicija", name:"Strelicija", latin:"Strelitzia sp.", tag:"na okenski polici",
@@ -207,7 +202,8 @@ const SEED = [
   zemlja:"50 % kakovostne univerzalne zemlje, 25 % perlita ali grobe mivke, 20 % lubja za orhideje, pest komposta ali črvjega humusa. pH rahlo kisel do nevtralen (6,0–6,5). Menjaj lonec vsaki 2–3 leta — rada je nekoliko utesnjena, ker tako prej zacveti.",
   gnojilo:"Uravnoteženo tekoče gnojilo (NPK 10-10-10 ali 20-20-20) vsakih 14 dni od marca do septembra, v polovični dozi. Za spodbujanje cvetenja spomladi preidi na gnojilo z več fosforja (15-30-15 ali gnojilo za cvetoče rastline). Pozimi ne gnoji.",
   svetloba:"Direktno sonce je zaželeno — južno ali zahodno okno. Brez nekaj ur direktne svetlobe na dan ne bo nikoli zacvetela. Na polno sonce jo navajaj postopno, teden ali dva, sicer dobi ožige.",
-  posebno:"Cveti šele pri starosti 4–6 let in samo z veliko svetlobe; gnojilo samo po sebi cvetenja ne sproži. Debele korenine hitro razženejo lonec — občasno preveri, ali silijo iz odtočnih lukenj."
+  posebno:"Cveti šele pri starosti 4–6 let in samo z veliko svetlobe; gnojilo samo po sebi cvetenja ne sproži. Debele korenine hitro razženejo lonec — občasno preveri, ali silijo iz odtočnih lukenj.",
+  zanimivost:"Cvet je dobil vzdevek „rajska ptica“, ker njegova oranžno-modra oblika res spominja na glavo eksotične ptice. V domovini v južni Afriki jo opraševalci ptički sončarji, ki pristanejo na modrem „jeziku“ cvetu kot na vejici."
 },
 {
   id:"dieffenbachija", name:"Dieffenbachija", latin:"Dieffenbachia sp.", tag:"strupena",
@@ -216,7 +212,8 @@ const SEED = [
   zemlja:"Zračna univerzalna zemlja s 25 % perlita. Presaditev vsaki 1–2 leti spomladi.",
   gnojilo:"Univerzalno tekoče gnojilo za zelene rastline na 2–3 tedne od aprila do septembra, v polovični dozi. Pozimi ne.",
   svetloba:"Svetlo mesto brez direktnega sonca. Premalo svetlobe pomeni dolge razmike med listi in ogolelo steblo.",
-  posebno:"Sok vsebuje kalcijev oksalat in ob stiku peče ustnice, jezik in grlo — hrani jo izven dosega otrok in živali, po rezanju ali presajanju si umij roke, po možnosti nosi rokavice. Da se spodnji listi sčasoma povesijo in porumenijo, je naraven proces staranja. Če se steblo preveč razgoli, jo spomladi prikrajšaj: vrh se ukorenini v vodi, iz panja pa poženejo novi poganjki."
+  posebno:"Sok vsebuje kalcijev oksalat in ob stiku peče ustnice, jezik in grlo — hrani jo izven dosega otrok in živali, po rezanju ali presajanju si umij roke, po možnosti nosi rokavice. Da se spodnji listi sčasoma povesijo in porumenijo, je naraven proces staranja. Če se steblo preveč razgoli, jo spomladi prikrajšaj: vrh se ukorenini v vodi, iz panja pa poženejo novi poganjki.",
+  zanimivost:"V angleščini ji pravijo „dumb cane“ (nema trsika) — sok z ostrimi kristali kalcijevega oksalata ob stiku z jezikom in grlom povzroči bolečo otrplost in za nekaj dni onemogoči govor. Po izročilu naj bi jo zato v karibskih kolonijah nekoč uporabljali za kaznovanje sužnjev."
 },
 {
   id:"euphorbia", name:"Euphorbia leuconeura", latin:"Euphorbia leuconeura", tag:"sukulenta",
@@ -225,7 +222,8 @@ const SEED = [
   zemlja:"Gotova mešanica za kaktuse in sukulente, ali univerzalna zemlja z dodano tretjino perlita in grobe mivke. Lonec mora biti odcedn in raje manjši kot večji.",
   gnojilo:"Gnojilo za kaktuse in sukulente (z manj dušika), 2–3-krat čez celotno rastno sezono. Več ni bolje — presoljena zemlja ji škodi.",
   svetloba:"Svetlo mesto; prenese tudi nekaj direktnega sonca. Ob premalo svetlobe se razpotegne in listi postanejo redki.",
-  posebno:"Bel mlečni sok je strupen in dražeč, posebej nevaren za oči — pri rezanju in presajanju nosi rokavice in se ne dotikaj obraza. Ko dozori, semena dobesedno izstreli več metrov daleč, zato bodo čez čas vzklila v sosednjih lončkih."
+  posebno:"Bel mlečni sok je strupen in dražeč, posebej nevaren za oči — pri rezanju in presajanju nosi rokavice in se ne dotikaj obraza. Ko dozori, semena dobesedno izstreli več metrov daleč, zato bodo čez čas vzklila v sosednjih lončkih.",
+  zanimivost:"Spada v isti rod kot božična zvezda, čeprav ji po videzu sploh ni podobna. Mlečni sok evforbij je tako jedek, da so ga v Afriki od nekdaj uporabljali kot strup za puščice in za omamljanje rib v ribnikih."
 }
 ];
 
@@ -297,16 +295,6 @@ function fertLabel(p){
   return { cls, txt:`pognojeno · še ${f.due} ${dw(f.due)}` };
 }
 
-const GAUGE_TICKS = 8;
-function gaugeHTML(s){
-  const pct = s.due === -999 ? 0 : Math.max(0, Math.min(1, s.due / s.iv));
-  const filled = Math.round(pct * GAUGE_TICKS);
-  return `<div class="gauge-wrap">
-    <div class="gauge" title="Delež časa do naslednjega zalivanja">${Array.from({length:GAUGE_TICKS},(_,i)=>`<span class="tick ${i<filled?"f":""}"></span>`).join("")}</div>
-    <span class="gauge-cap">do zalivanja</span>
-  </div>`;
-}
-
 function cardHTML(p){
   const s = status(p);
   const w = waterLabel(s);
@@ -319,8 +307,7 @@ function cardHTML(p){
       <div class="cinfo">
         <h3 class="nm">${esc(p.name)}</h3>
         <p class="lat">${p.hydro ? "v vodi · menjaj vsak teden" : esc(p.latin)}</p>
-        ${p.tag ? `<p class="tagline">${esc(p.tag)}</p>` : ""}
-        ${gaugeHTML(s)}
+        ${p.zanimivost ? `<p class="tagline">${esc(p.zanimivost)}</p>` : ""}
         <div class="stats">
           <span class="stat ${w.cls}">${w.txt}</span>
           ${fl ? `<span class="stat ${fl.cls}">${fl.txt}</span>` : ""}
@@ -328,8 +315,6 @@ function cardHTML(p){
       </div>
     </div>
     <div class="card-acts">
-      <button class="btn" data-water="${p.id}">${p.hydro?"Menjana":"Zalito"}</button>
-      ${growing() && p.fd ? `<button class="btn feed" data-feed="${p.id}">Pognojeno</button>` : ""}
       <button class="link" data-status="${p.id}">+ status</button>
     </div>
   </div>`;
@@ -382,7 +367,7 @@ function addForm(){
     <h2 class="nm" style="font-size:23px;margin-bottom:18px">Nova rastlina</h2>
     <label class="lbl">Ime</label><input id="f-name" placeholder="npr. Fikus">
     <label class="lbl">Latinsko ime</label><input id="f-latin" placeholder="Ficus elastica">
-    <label class="lbl">Zanimivost / oznaka</label><input id="f-tag" placeholder="npr. stara ~50 let">
+    <label class="lbl">Zanimivost / zgodba (neobvezno)</label><input id="f-tag" placeholder="Kratka zanimivost ali mit o rastlini">
     <div style="display:flex;gap:10px">
       <div style="flex:1"><label class="lbl">Zalivanje poleti (dni)</label><input id="f-wg" type="number" value="7"></div>
       <div style="flex:1"><label class="lbl">Pozimi (dni)</label><input id="f-wr" type="number" value="12"></div>
@@ -504,7 +489,7 @@ document.addEventListener("click", e => {
     const v = id => $("#f-"+id).value.trim();
     if (!v("name")) return;
     plants.push({
-      id: "p" + Date.now(), name: v("name"), latin: v("latin") || "—", tag: v("tag"),
+      id: "p" + Date.now(), name: v("name"), latin: v("latin") || "—", zanimivost: v("tag"),
       wg: +$("#f-wg").value || 7, wr: +$("#f-wr").value || 12, fd: +$("#f-fd").value || 0,
       voda: v("voda") || "Zalij, ko sta zgornja 2–3 cm suha.",
       zemlja: v("zemlja") || "Univerzalna zemlja s perlitom, lonec z odtokom.",
